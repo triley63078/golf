@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Justin's Record Against Tim 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fairway: #2d8a47;
+    --rough: #1a5c2a;
+    --dark-green: #0d1f0f;
+    --gold: #f4c430;
+    --white: #f8f8f0;
+    --sand: #e8d5a3;
+    --red: #e74c3c;
+    --flagred: #cc2200;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Oswald', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    background: var(--dark-green);
+  }
+
+  /* === GOLF COURSE BACKGROUND === */
+  .course-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  /* Sky */
+  .sky {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 38%;
+    background: linear-gradient(180deg, #0a1a2e 0%, #163a52 60%, #1f5e3a 100%);
+  }
+
+  /* Fairway stripes */
+  .fairway {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 65%;
+    background: #2a7a40;
+    overflow: hidden;
+  }
+
+  .fairway-stripe {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 12%;
+    background: rgba(0,0,0,0.06);
+  }
+  .fairway-stripe:nth-child(1)  { left: 0%; }
+  .fairway-stripe:nth-child(2)  { left: 24%; }
+  .fairway-stripe:nth-child(3)  { left: 48%; }
+  .fairway-stripe:nth-child(4)  { left: 72%; }
+  .fairway-stripe:nth-child(5)  { left: 96%; }
+
+  /* Rough on sides */
+  .rough-left, .rough-right {
+    position: absolute;
+    top: 33%; bottom: 0;
+    width: 8%;
+    background: #1a5c2a;
+  }
+  .rough-left  { left: 0; }
+  .rough-right { right: 0; }
+
+  /* Horizon tree line */
+  .treeline {
+    position: absolute;
+    bottom: 62%;
+    left: 0; right: 0;
+    height: 60px;
+    background: #143d20;
+    clip-path: polygon(
+      0% 100%, 3% 40%, 6% 70%, 9% 20%, 12% 55%, 15% 30%, 18% 65%,
+      21% 10%, 24% 50%, 27% 25%, 30% 60%, 33% 15%, 36% 45%, 39% 30%,
+      42% 55%, 45% 5%, 48% 40%, 51% 20%, 54% 50%, 57% 10%, 60% 45%,
+      63% 25%, 66% 55%, 69% 15%, 72% 40%, 75% 20%, 78% 60%, 81% 30%,
+      84% 50%, 87% 10%, 90% 40%, 93% 25%, 96% 55%, 100% 30%, 100% 100%
+    );
+  }
+
+  /* Putting green circle */
+  .putting-green {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: 110px;
+    background: radial-gradient(ellipse, #3aaa55 60%, #2a8a40 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(58,170,85,0.3);
+  }
+
+  /* Flag / pin on green */
+  .flag-pin {
+    position: absolute;
+    bottom: calc(5% + 55px);
+    left: calc(50% + 30px);
+    width: 3px;
+    height: 80px;
+    background: #ccc;
+    transform-origin: bottom center;
+  }
+
+  .flag-pin::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 28px;
+    height: 18px;
+    background: var(--flagred);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    animation: flagWave 2s ease-in-out infinite;
+    transform-origin: left center;
+  }
+
+  @keyframes flagWave {
+    0%, 100% { transform: skewY(0deg) scaleX(1); }
+    50%       { transform: skewY(-8deg) scaleX(0.85); }
+  }
+
+  /* Sand bunker */
+  .bunker {
+    position: absolute;
+    bottom: 7%;
+    left: calc(50% + 120px);
+    width: 90px;
+    height: 40px;
+    background: radial-gradient(ellipse, #dfc87a 60%, #c9ae5a 100%);
+    border-radius: 50%;
+    opacity: 0.85;
+  }
+
+  /* Floating golf balls */
+  .golf-ball {
+    position: fixed;
+    background: radial-gradient(circle at 35% 35%, #fff 30%, #ddd 70%, #bbb 100%);
+    border-radius: 50%;
+    opacity: 0;
+    animation: ballArc linear infinite;
+    z-index: 1;
+    box-shadow: inset -1px -2px 3px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  @keyframes ballArc {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    5%   { opacity: 0.5; }
+    50%  { opacity: 0.5; }
+    95%  { opacity: 0.3; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0; }
+  }
+
+  .gb1 { width:16px;height:16px; left:10%; top:70%; --tx:200px; --ty:-300px; --rot:540deg; animation-duration:8s; animation-delay:0s; }
+  .gb2 { width:20px;height:20px; left:80%; top:65%; --tx:-250px; --ty:-280px; --rot:-360deg; animation-duration:10s; animation-delay:2s; }
+  .gb3 { width:14px;height:14px; left:40%; top:75%; --tx:180px; --ty:-320px; --rot:720deg; animation-duration:9s; animation-delay:4s; }
+  .gb4 { width:18px;height:18px; left:60%; top:68%; --tx:-160px; --ty:-260px; --rot:-540deg; animation-duration:11s; animation-delay:1s; }
+  .gb5 { width:12px;height:12px; left:25%; top:72%; --tx:220px; --ty:-200px; --rot:360deg; animation-duration:7s; animation-delay:5s; }
+
+  /* === MAIN CONTENT === */
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 200px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: dropIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes dropIn {
+    0%   { transform: translateY(-60px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Scorecard header strip */
+  .scorecard-label {
+    display: inline-block;
+    background: var(--fairway);
+    color: rgba(255,255,255,0.8);
+    font-size: 0.7rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    padding: 5px 20px;
+    border-radius: 3px 3px 0 0;
+    margin-bottom: 0;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 7vw, 6rem);
+    letter-spacing: 3px;
+    line-height: 1.05;
+    color: var(--white);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(45,138,71,0.4);
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top: none;
+    padding: 16px 32px 20px;
+    background: rgba(10,30,15,0.7);
+    backdrop-filter: blur(4px);
+    border-radius: 0 0 8px 8px;
+  }
+
+  h1 span {
+    color: var(--gold);
+  }
+
+  /* Scoreboard card */
+  .scoreboard {
+    width: 100%;
+    max-width: 780px;
+    animation: slideUp 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  }
+
+  @keyframes slideUp {
+    0%   { transform: translateY(50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Scorecard look */
+  .board {
+    background: #f5f0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 4px rgba(255,255,255,0.08);
+    color: #1a1a1a;
+  }
+
+  .board-top-bar {
+    background: var(--rough);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 20px;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+  }
+
+  .board-top-bar .hole-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0.7;
+  }
+
+  /* Player row */
+  .board-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    align-items: center;
+    background: #1e3d25;
+    padding: 24px 32px 20px;
+    gap: 10px;
+  }
+
+  .player { text-align: center; }
+
+  .player-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: 3px;
+    display: block;
+    line-height: 1;
+  }
+
+  .player-name.tim    { color: var(--gold); }
+  .player-name.justin { color: #f08080; }
+
+  .vs-divider {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.25);
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  /* Score row — looks like a scorecard */
+  .score-row {
+    background: #f5f0e0;
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    align-items: center;
+    padding: 10px 32px 6px;
+    border-bottom: 2px solid #c8b97a;
+  }
+
+  .score-label {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #888;
+    text-align: center;
+  }
+
+  .score-display {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    align-items: center;
+    padding: 10px 32px 30px;
+    background: #f5f0e0;
+  }
+
+  .score-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(7rem, 22vw, 13rem);
+    line-height: 1;
+    text-align: center;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  .score-tim    { color: #b8930a; }
+  .score-justin { color: #c0392b; }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.02); }
+  }
+
+  .score-dash {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    color: #bbb;
+    text-align: center;
+    line-height: 1;
+  }
+
+  /* Bottom scorecard row with par info */
+  .scorecard-footer {
+    background: #1e3d25;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: center;
+    padding: 14px 32px;
+    gap: 10px;
+  }
+
+  .sc-stat {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .sc-stat strong {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .sc-stat.tied strong { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- Golf course background -->
+<div class="course-bg">
+  <div class="sky"></div>
+  <div class="treeline"></div>
+  <div class="fairway">
+    <div class="fairway-stripe"></div>
+    <div class="fairway-stripe"></div>
+    <div class="fairway-stripe"></div>
+    <div class="fairway-stripe"></div>
+    <div class="fairway-stripe"></div>
+  </div>
+  <div class="rough-left"></div>
+  <div class="rough-right"></div>
+  <div class="putting-green"></div>
+  <div class="flag-pin"></div>
+  <div class="bunker"></div>
+</div>
+
+<!-- Floating golf balls -->
+<div class="golf-ball gb1"></div>
+<div class="golf-ball gb2"></div>
+<div class="golf-ball gb3"></div>
+<div class="golf-ball gb4"></div>
+<div class="golf-ball gb5"></div>
+
+<div class="content">
+  <header>
+    <div class="scorecard-label">⛳ Official Scorecard · 2026 Season</div>
+    <h1>Justin's Record<br>Against <span>Tim</span><br>In 2026</h1>
+  </header>
+
+  <div class="scoreboard">
+    <div class="board">
+
+      <div class="board-top-bar">
+        <div class="hole-dot"></div>
+        Head-to-Head Record
+        <div class="hole-dot"></div>
+      </div>
+
+      <div class="board-header">
+        <div class="player">
+          <span class="player-name tim">Tim</span>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="player">
+          <span class="player-name justin">Justin</span>
+        </div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-label">Wins</div>
+        <div></div>
+        <div class="score-label">Wins</div>
+      </div>
+
+      <div class="score-display">
+        <div class="score-num score-tim">1</div>
+        <div class="score-dash">–</div>
+        <div class="score-num score-justin">1</div>
+      </div>
+
+      <div class="scorecard-footer">
+        <div class="sc-stat"><strong>1</strong>Rounds Won</div>
+        <div class="sc-stat tied"><strong>TIED</strong>Current Status</div>
+        <div class="sc-stat"><strong>1</strong>Rounds Won</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
